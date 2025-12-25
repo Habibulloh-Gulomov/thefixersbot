@@ -3,8 +3,7 @@ export function createSmsHandler({ botToken, chatId }) {
     const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
     await axios.post(url, {
       chat_id: chatId,
-      text,
-      parse_mode: 'HTML' // Added HTML support for bolding
+      text, // Added HTML support for bolding
     });
   }
 
@@ -33,4 +32,5 @@ export function createSmsHandler({ botToken, chatId }) {
       res.status(500).send('ERROR');
     }
   };
+
 }
