@@ -1,5 +1,5 @@
 import express from 'express';
-import cors from 'cors'; // Import cors
+import cors from 'cors';
 import { createSmsHandler } from './js/Fun.js';
 
 const app = express();
@@ -7,14 +7,18 @@ const app = express();
 // --- CORS CONFIGURATION ---
 const allowedOrigins = [
   'https://thefixers.uz',
-  'https://thefixersuz.netlify.app'
+  'https://thefixersuz.netlify.app',
+  'http://localhost:3000', // Added for local development
+  'http://localhost:5173', // Common if you are using Vite
+  'http://127.0.0.1:3000'   // Alternative local address
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
+    // 1. Allow requests with no origin (like mobile apps or Postman)
     if (!origin) return callback(null, true);
     
+    // 2. Check if the origin is in our allowed list
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -35,12 +39,11 @@ const smsHandler = createSmsHandler({
   chatId: '5006214046'
 });
 
-// Your endpoint
 app.post('/sms', smsHandler);
 
-// Basic health check for Render
+// Health check
 app.get('/', (req, res) => {
-  res.send('Server is active and CORS is configured.');
+  res.send('Server is active and CORS is configured for Local & Production.');
 });
 
 const PORT = process.env.PORT || 3000;
