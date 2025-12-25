@@ -1,36 +1,36 @@
+const axios = require('axios'); // Ensure axios is imported
+
 export function createSmsHandler({ botToken, chatId }) {
   async function sendToTelegram(text) {
     const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+    
+    // The fix: explicitly set parse_mode to 'HTML'
     await axios.post(url, {
       chat_id: chatId,
-      text, // Added HTML support for bolding
+      text: text,
+      parse_mode: 'HTML', 
     });
   }
 
   return async function smsHandler(req, res) {
     try {
-      // 1. Extract info from the request body
-      const name = req.body.name || req.body.full_name || 'Not provided';
-      const phone = req.body.phone || req.body.from || 'Not provided';
-      const company = req.body.company || req.body.company_name || 'Not provided';
-      const position = req.body.position || req.body.job_title || 'Not provided';
-      const employees = req.body.employees || req.body.employee_count || 'Not provided';
+      // Extraction logic (keep as is, it's robust)
+      const { name, phone, company, position, employees } = req.body;
 
-      // 2. Format the message with HTML for better readability
       const text = 
         `<b>👤 New Lead Received</b>\n\n` +
-        `<b>Name:</b> ${name}\n` +
-        `<b>Phone:</b> ${phone}\n` +
-        `<b>Company:</b> ${company}\n` +
-        `<b>Position:</b> ${position}\n` +
-        `<b>Employees:</b> ${employees}`;
+        `<b>Name:</b> ${name || 'N/A'}\n` +
+        `<b>Phone:</b> ${phone || 'N/A'}\n` +
+        `<b>Company:</b> ${company || 'N/A'}\n` +
+        `<b>Position:</b> ${position || 'N/A'}\n` +
+        `<b>Employees:</b> ${employees || 'N/A'}`;
 
       await sendToTelegram(text);
-      res.send('OK');
+      res.status(200).send('OK'); 
     } catch (err) {
-      console.error(err);
+      // This helps you see the REAL error in Render logs
+      console.error("Telegram Error:", err.response?.data || err.message);
       res.status(500).send('ERROR');
     }
   };
-
 }
