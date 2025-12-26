@@ -5,8 +5,9 @@ import { createSmsHandler } from './js/Fun.js';
 const app = express();
 
 // --- CONFIGURATION ---
+// IMPORTANT: If sending to a group, ensure the ID starts with -100
 const botToken = '8349433544:AAHktReVCicPy7Z9rZJWiWFBd1RwZy7Allc';
-const chatId = '3676936082';
+const chatId = '3676936082'; 
 
 // Helper function to send status messages to Telegram
 const sendTelegramStatus = async (message) => {
@@ -57,14 +58,17 @@ const smsHandler = createSmsHandler({
   chatId: chatId
 });
 
-app.post('/sms', smsHandler);
+// Wrap the handler to log incoming data (Debugging)
+app.post('/sms', (req, res, next) => {
+  console.log("Incoming SMS Data:", req.body);
+  smsHandler(req, res, next);
+});
 
 app.get('/', (req, res) => {
   res.send('Server is active and CORS is configured for Local & Production.');
 });
 
 // --- ERROR HANDLING MIDDLEWARE ---
-// This catches errors occurring during request processing
 app.use((err, req, res, next) => {
   const errorMessage = `⚠️ <b>Server Error</b>\n\n<b>Path:</b> ${req.path}\n<b>Error:</b> ${err.message}`;
   sendTelegramStatus(errorMessage);
@@ -73,16 +77,13 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 
-// Start Server with Notification
 const server = app.listen(PORT, async () => {
   const startMsg = `✅ <b>Server Started</b>\n\nPort: ${PORT}\nStatus: SMS → Telegram ishlamoqda.`;
-  console.log(`SMS → Telegram server 3000 portda ishamoqda ${PORT}`);
+  console.log(`SMS → Telegram server portda ishlamoqda: ${PORT}`);
   await sendTelegramStatus(startMsg);
 });
 
-// Catch Uncaught Exceptions (General Errors)
 process.on('uncaughtException', async (error) => {
   await sendTelegramStatus(`🚫 <b>Uncaught Exception</b>\n<code>${error.message}</code>`);
   process.exit(1);
 });
-
