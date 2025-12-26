@@ -6,7 +6,7 @@ const app = express();
 
 // --- CONFIGURATION ---
 const botToken = '8349433544:AAHktReVCicPy7Z9rZJWiWFBd1RwZy7Allc';
-const chatId = '5006214046';
+const chatId = '3676936082';
 
 // Helper function to send status messages to Telegram
 const sendTelegramStatus = async (message) => {
@@ -85,3 +85,4 @@ process.on('uncaughtException', async (error) => {
   await sendTelegramStatus(`🚫 <b>Uncaught Exception</b>\n<code>${error.message}</code>`);
   process.exit(1);
 });
+
