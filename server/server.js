@@ -7,6 +7,7 @@ const app = express();
 // --- CORS CONFIGURATION ---
 const allowedOrigins = [
   'https://thefixers.uz',
+  'http://thefixers.uz',
   'https://thefixersuz.netlify.app',
   'http://localhost:3000', // Added for local development
   'http://localhost:5173', // Common if you are using Vite
@@ -50,3 +51,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`SMS → Telegram сервер запущен на порту ${PORT}`);
 });
+
